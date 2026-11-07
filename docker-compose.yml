@@ -1,0 +1,45 @@
+services:
+  # Base de datos (MariaDB). Importa automáticamente cualquier .sql de
+  # ./database/dump en el PRIMER arranque (cuando el volumen está vacío).
+  # El dump NO está en el repo (datos sensibles de pacientes); ver
+  # database/dump/README.md.
+  db:
+    image: mariadb:10.11
+    container_name: ipsv2_db
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: ipsupc_ips
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./database/dump:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+  # API Laravel (PHP 8.4 + Apache). Docroot = public/.
+  backend:
+    build: ./docker
+    container_name: ipsv2_backend
+    ports:
+      - "8000:80"
+    volumes:
+      - "./backend:/var/www/html"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # phpMyAdmin (opcional) para inspeccionar la BD en http://localhost:8082
+  pma:
+    image: phpmyadmin:5
+    container_name: ipsv2_pma
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8082:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  dbdata:

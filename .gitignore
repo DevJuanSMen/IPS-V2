@@ -1,0 +1,15 @@
+# ⚠️ Base de datos — NUNCA subir datos reales de pacientes (PII de salud)
+database/dump/*.sql
+database/dump/*.sql.gz
+*.sql
+*.sql.gz
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# Nota: backend/ y frontend/ tienen su propio .gitignore
+# (vendor, node_modules, .env, etc.)
